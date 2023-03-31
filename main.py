@@ -1,81 +1,92 @@
 import os
 import discord
-from discord.ext import commands
-from gtts import gTTS
-import time
+from discord.ext import tasks, commands
 import random
-import asyncio
 from keep_alive import keep_alive
+from pytube import Playlist
 
 keep_alive()
-vids = ["World’s Largest Cuckoo Clock In The Black Forest Of Germany | Europe To The Maxx", "Meine Schwarzwälder Kuckucksuhren - My Black Forest cuckoo clocks", "23 cuckoo bird calls in 50 seconds - Cuckoo Clock 'Coo Coo' Compilation"]
+vids = [
+    "ATEEZ(에이티즈) WANTEEZ EP.15 명백한 허위 증언입니다⚖",
+    "ATEEZ(에이티즈) - 'HALAZIA' Official MV",
+    "Cyberpunk - ATEEZ(에이티즈) [뮤직뱅크/Music Bank] | KBS 230106 방송"
+]
+
+fcpl = "https://www.youtube.com/playlist?list=PL0VABZJqw90yVPy8-KB07rJRXTmhSXLj1&jct=MaS1nTcrBKbbHx0qptItZ0ZZkJSnMA"
+
+stpl = "https://www.youtube.com/playlist?list=PL0VABZJqw90z2bSMI1_HPz4BZ007IT2lu&jct=l5Lwa9HRXpR0E3JYwUmjrFw8iSAldg"
+
+mspl = "https://www.youtube.com/playlist?list=OLAK5uy_mhIfeEQekE1BSH2Qzwj-3AU-wTzIiC2Q4"
+
+
+def get_random_vid(playlist_url):
+    p = Playlist(playlist_url)
+    urls = p.video_urls
+    url = urls[random.randint(0, len(urls) - 1)]
+    return url
+
+
 token = os.environ['token']
 bot = commands.Bot(command_prefix='!',
-				   activity=discord.Activity(type=discord.ActivityType.watching, name=vids[random.randint(0, len(vids)-1)]),
-				   status=discord.Status.idle,
+                   activity=discord.Activity(
+                       type=discord.ActivityType.watching,
+                       name=vids[random.randint(0,
+                                                len(vids) - 1)]),
+                   status=discord.Status.idle,
                    intents=discord.Intents.all())
 
 
 @bot.event
 async def on_ready():
+    daily_stage.start()
     print('logged in as {0.user}'.format(bot))
     discord.opus.load_opus("./libopus.so.0.8.0")
 
 
-@bot.command()
-async def test(ctx):
-    print("ok")
+@bot.event
+async def on_member_join(member):
+    wc_channel = bot.get_channel(1091314075285331999)
+    fn = f"annyeong/a{str(random.randint(1, 3))}.jpg"
+    await wc_channel.send(
+        f"{member.name}！歡迎來到甲板女工會議室，我是甲板機器人啵梯妮。你可以先到公告頻道閱讀伺服器導覽，並為自己設定伺服器暱稱和身分組。",
+        file=discord.File(fn))
 
 
 @bot.command()
-async def boogoo(ctx):
-	def check(m):
-		return m.author == ctx.author and m.channel == ctx.channel
-	stopped = False
-	try:
-		channel = ctx.author.voice.channel
-		print("boogoo!")
-		await bot.change_presence(activity=discord.Game(name="BooGoo"))
+async def cmd(ctx):
+    gl = "指令:\n!fancam 推薦欸梯子直拍\n!stage 推薦欸梯子舞台\n!song 推薦欸梯子歌曲"
+    await ctx.send(gl)
+    return
 
-	except:
-		await ctx.send("請先加入語音頻道")
 
-	now = time.gmtime()
-	interval = 1
-	if now[4] % interval == 0 and now[5] == 0:
-		v = await channel.connect()
-		vc = ctx.guild.voice_client
-		print(vc)
-		txt = "現在是" + str((now[3] + 8) % 24) + "點" + str(now[4]) + "分"
-		tts = gTTS(txt, lang='zh')
-		fn = 'boogoo.mp3'
-		tts.save(fn)
-		v.play(discord.FFmpegPCMAudio(fn))
-		time.sleep(5)
-		await vc.disconnect()
+@bot.command()
+async def fancam(ctx):
+    r = random.randint(0, 1)
+    mypl = "https://www.youtube.com/playlist?list=PLtq5j3zzu44kdauHhm79RQbVdT2UHEwQz"
+    if r == 0:
+        await ctx.send(get_random_vid(fcpl))
+    else:
+        await ctx.send("愚人節快樂！")
+        await ctx.send(get_random_vid(mypl))
 
-	while not stopped:
-		try:
-			message = await bot.wait_for("message", check=check, timeout=0.8)
-			stopped = True if message.content.lower() == "!stop" else False
-		except asyncio.TimeoutError:
-			now = time.gmtime()
-			interval = 5
-			if now[4] % interval == 0 and now[5] == 0:
-				v = await channel.connect()
-				vc = ctx.guild.voice_client
-				print(vc)
-				txt = "現在是" + str((now[3] + 8) % 24) + "點" + str(now[4]) + "分"
-				tts = gTTS(txt, lang='zh')
-				fn = 'boogoo.mp3'
-				tts.save(fn)
-				v.play(discord.FFmpegPCMAudio(fn))
-				time.sleep(5)
-				await vc.disconnect()
-	if stopped:
-		print("stopped")
-		await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=vids[random.randint(0, len(vids))]))
-		return
+
+@bot.command()
+async def stage(ctx):
+    await ctx.send(get_random_vid(stpl))
+    return
+
+
+@bot.command()
+async def song(ctx):
+    await ctx.send(get_random_vid(mspl))
+    return
+
+
+@tasks.loop(hours=24)
+async def daily_stage():
+    print("sent")
+    channel = bot.get_channel(int(1090973582487715880))
+    await channel.send("今日舞台：" + get_random_vid(stpl))
 
 
 try:
