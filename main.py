@@ -112,6 +112,13 @@ async def poll(ctx, question, *options: str):
     embed.set_footer(text='Poll ID: {}'.format(react_message.id))
     await react_message.edit(embed=embed)
 
+@bot.command()
+async def draw(ctx):
+	members = ctx.guild.members
+	i = random.randint(0, len(members)-1)
+	mt = f"<@{str(members[i].id)}>"
+	await ctx.send(mt)
+
 
 @tasks.loop(hours=24)
 async def daily_stage():
