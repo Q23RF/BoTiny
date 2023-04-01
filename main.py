@@ -54,7 +54,7 @@ async def on_member_join(member):
 
 @bot.command()
 async def cmd(ctx):
-    gl = "指令:\n!fancam 推薦欸梯子直拍\n!stage 推薦欸梯子舞台\n!song 推薦欸梯子歌曲"
+    gl = "指令:\n!fancam 推薦欸梯子直拍\n!stage 推薦欸梯子舞台\n!song 推薦欸梯子歌曲\n!submit(私訊使用) 匿名投稿"
     await ctx.send(gl)
     return
 
@@ -79,6 +79,15 @@ async def stage(ctx):
 @bot.command()
 async def song(ctx):
     await ctx.send(get_random_vid(mspl))
+    return
+
+@bot.command()
+@commands.dm_only()
+async def submit(ctx):
+    await ctx.send("請發送你的投稿:")
+    msg = await bot.wait_for('message')
+    channel = bot.get_channel(1091693491396038666)
+    await channel.send("投稿: "+msg.content)
     return
 
 
