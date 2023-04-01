@@ -46,7 +46,7 @@ async def on_ready():
 @bot.event
 async def on_member_join(member):
     wc_channel = bot.get_channel(1091314075285331999)
-    fn = f"annyeong/a{str(random.randint(1, 3))}.jpg"
+    fn = f"annyeong/a{str(random.randint(1, 4))}.jpg"
     await wc_channel.send(
         f"{member.name}！歡迎來到甲板女工會議室，我是甲板機器人啵梯妮。你可以先到公告頻道閱讀伺服器導覽，並為自己設定伺服器暱稱和身分組。",
         file=discord.File(fn))
@@ -54,7 +54,7 @@ async def on_member_join(member):
 
 @bot.command()
 async def cmd(ctx):
-    gl = "指令:\n!fancam 推薦欸梯子直拍\n!stage 推薦欸梯子舞台\n!song 推薦欸梯子歌曲\n!submit(私訊使用) 匿名投稿"
+    gl = "指令:\n!fancam 推薦欸梯子直拍\n!stage 推薦欸梯子舞台\n!song 推薦欸梯子歌曲\n!submit+投稿內容 私訊匿名投稿\n!poll+問題+選項(數量<=10) 開啟投票"
     await ctx.send(gl)
     return
 
@@ -81,14 +81,36 @@ async def song(ctx):
     await ctx.send(get_random_vid(mspl))
     return
 
+
 @bot.command()
 @commands.dm_only()
-async def submit(ctx):
-    await ctx.send("請發送你的投稿:")
-    msg = await bot.wait_for('message')
+async def submit(ctx, arg):
     channel = bot.get_channel(1091693491396038666)
-    await channel.send("投稿: "+msg.content)
+    await channel.send("投稿:" + arg)
     return
+
+@bot.command(pass_context=True)
+async def poll(ctx, question, *options: str):
+    if len(options) <= 1:
+        await ctx.send('You need more than one option to make a poll!')
+        return
+    if len(options) > 10:
+        await ctx.send('You cannot make a poll for more than 10 things!')
+        return
+
+    if len(options) == 2 and options[0] == 'yes' and options[1] == 'no':
+        reactions = ['✅', '❌']
+    else:
+        reactions = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
+    description = []
+    for x, option in enumerate(options):
+        description += '\n {} {}'.format(reactions[x], option)
+    embed = discord.Embed(title=question, description=''.join(description))
+    react_message = await ctx.send(embed=embed)
+    for reaction in reactions[:len(options)]:
+        await react_message.add_reaction(reaction)
+    embed.set_footer(text='Poll ID: {}'.format(react_message.id))
+    await react_message.edit(embed=embed)
 
 
 @tasks.loop(hours=24)
