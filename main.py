@@ -61,13 +61,7 @@ async def cmd(ctx):
 
 @bot.command()
 async def fancam(ctx):
-    r = random.randint(0, 1)
-    mypl = "https://www.youtube.com/playlist?list=PLtq5j3zzu44kdauHhm79RQbVdT2UHEwQz"
-    if r == 0:
-        await ctx.send(get_random_vid(fcpl))
-    else:
-        await ctx.send("愚人節快樂！")
-        await ctx.send(get_random_vid(mypl))
+    await ctx.send(get_random_vid(fcpl))
 
 
 @bot.command()
