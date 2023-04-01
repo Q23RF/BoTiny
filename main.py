@@ -54,7 +54,7 @@ async def on_member_join(member):
 
 @bot.command()
 async def cmd(ctx):
-    gl = "指令:\n!fancam 推薦欸梯子直拍\n!stage 推薦欸梯子舞台\n!song 推薦欸梯子歌曲\n!submit+投稿內容 私訊匿名投稿\n!poll+問題+選項(數量<=10) 開啟投票"
+    gl = "指令:\n!fancam 推薦欸梯子直拍\n!stage 推薦欸梯子舞台\n!song 推薦欸梯子歌曲\n!submit+投稿內容 私訊匿名投稿\n!poll+問題+選項(數量<=10) 開啟投票\n!draw 隨機抽取伺服器成員"
     await ctx.send(gl)
     return
 
