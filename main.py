@@ -9,7 +9,8 @@ keep_alive()
 vids = [
     "ATEEZ(에이티즈) WANTEEZ EP.15 명백한 허위 증언입니다⚖",
     "ATEEZ(에이티즈) - 'HALAZIA' Official MV",
-    "Cyberpunk - ATEEZ(에이티즈) [뮤직뱅크/Music Bank] | KBS 230106 방송"
+    "Cyberpunk - ATEEZ(에이티즈) [뮤직뱅크/Music Bank] | KBS 230106 방송",
+	"Sparkling(스파클링) - Diamond (Sketchbook) | KBS WORLD TV 210611"
 ]
 
 fcpl = "https://www.youtube.com/playlist?list=PL0VABZJqw90yVPy8-KB07rJRXTmhSXLj1&jct=MaS1nTcrBKbbHx0qptItZ0ZZkJSnMA"
